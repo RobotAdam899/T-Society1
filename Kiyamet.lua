@@ -24,7 +24,7 @@ title.BackgroundTransparency = 1
 title.Font = Enum.Font.Arcade
 title.TextScaled = true
 
--- Buton 1: Bring All
+-- Butonlar
 local bringBtn = Instance.new("TextButton", main)
 bringBtn.Size = UDim2.new(0.9, 0, 0.25, 0)
 bringBtn.Position = UDim2.new(0.05, 0, 0.4, 0)
@@ -34,7 +34,6 @@ bringBtn.Font = Enum.Font.GothamBold
 bringBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 bringBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 
--- Buton 2: Hortum
 local tornadoBtn = bringBtn:Clone()
 tornadoBtn.Text = "🌪 Hortum"
 tornadoBtn.Position = UDim2.new(0.05, 0, 0.7, 0)
@@ -71,23 +70,23 @@ local function forcePart(v, target)
 	end
 end
 
--- Bring ALL Parts butonu
+-- Bring All Parts (sana yapışmaz!)
 bringBtn.MouseButton1Click:Connect(function()
 	for _, obj in pairs(workspace:GetDescendants()) do
 		if math.random() < 0.5 then
-			forcePart(obj, attach0)
+			forcePart(obj, attach0) -- merkeze çek
 		else
 			for _, plr in pairs(Players:GetPlayers()) do
-				if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+				if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
 					local att1 = Instance.new("Attachment", plr.Character.HumanoidRootPart)
-					forcePart(obj, att1)
+					forcePart(obj, att1) -- sadece diğer oyunculara yapışır
 				end
 			end
 		end
 	end
 end)
 
--- 🌪 Hortum butonu
+-- Hortum efekti
 tornadoBtn.MouseButton1Click:Connect(function()
 	for _, obj in pairs(workspace:GetDescendants()) do
 		if obj:IsA("BasePart") and not obj.Anchored and not obj:IsDescendantOf(Players) then
