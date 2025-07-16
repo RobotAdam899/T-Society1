@@ -39,7 +39,7 @@ tornadoBtn.Text = "🌪 Hortum"
 tornadoBtn.Position = UDim2.new(0.05, 0, 0.7, 0)
 tornadoBtn.Parent = main
 
--- Fizik efekt fonksiyonu
+-- Fizik etkisi
 local function chaosPart(part)
 	if part:IsA("BasePart") and not part.Anchored and not part:IsDescendantOf(Players) then
 		part.CanCollide = false
@@ -69,6 +69,7 @@ bringBtn.MouseButton1Click:Connect(function()
 		end
 	end
 
+	-- Diğer oyunculara yapışan objeler
 	for _, plr in pairs(Players:GetPlayers()) do
 		if plr.Name ~= "botkullanici099" and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
 			local part = Instance.new("Part", Workspace)
