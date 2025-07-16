@@ -3,7 +3,7 @@ local Workspace = game:GetService("Workspace")
 local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 
--- GUI Oluştur
+-- GUI oluştur
 local gui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
 gui.Name = "TSOCIETY_KIYAMET"
 gui.ResetOnSpawn = false
@@ -39,65 +39,69 @@ tornadoBtn.Text = "🌪 Hortum"
 tornadoBtn.Position = UDim2.new(0.05, 0, 0.7, 0)
 tornadoBtn.Parent = main
 
--- Kara delik merkezi
-local center = Instance.new("Part", workspace)
-center.Anchored = true
-center.CanCollide = false
-center.Shape = Enum.PartType.Ball
-center.Size = Vector3.new(12,12,12)
-center.Material = Enum.Material.Neon
-center.Color = Color3.fromRGB(0,0,0)
-center.Position = Vector3.new(0,20,0)
-center.Name = "TSC_BH_CENTER"
+-- Uçurucu fonksiyon
+local function chaosPart(part)
+	if part:IsA("BasePart") and not part.Anchored and not part:IsDescendantOf(Players) then
+		part.CanCollide = false
+		local att = Instance.new("Attachment", part)
 
-local attach0 = Instance.new("Attachment", center)
-
--- Fizik yapıştırma fonksiyonu
-local function forcePart(v, target)
-	if v:IsA("BasePart") and not v.Anchored and not v:IsDescendantOf(Players) and v.Name ~= "Handle" then
-		v.CanCollide = false
-
-		local att = Instance.new("Attachment", v)
-		local torque = Instance.new("Torque", v)
+		local torque = Instance.new("Torque", part)
 		torque.Torque = Vector3.new(1e6, 1e6, 1e6)
 		torque.Attachment0 = att
 
-		local align = Instance.new("AlignPosition", v)
+		local align = Instance.new("AlignPosition", part)
 		align.Attachment0 = att
-		align.Attachment1 = target
-		align.MaxForce = math.huge
-		align.Responsiveness = 300
+		align.Position = part.Position + Vector3.new(
+			math.random(-30, 30),
+			math.random(20, 60),
+			math.random(-30, 30)
+		)
+		align.MaxForce = Vector3.new(9e5, 9e5, 9e5)
+		align.Responsiveness = 250
 	end
 end
 
--- Bring All Parts (sana yapışmaz!)
+-- Bring butonu
 bringBtn.MouseButton1Click:Connect(function()
-	for _, obj in pairs(workspace:GetDescendants()) do
-		if math.random() < 0.5 then
-			forcePart(obj, attach0) -- merkeze çek
-		else
-			for _, plr in pairs(Players:GetPlayers()) do
-				if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-					local att1 = Instance.new("Attachment", plr.Character.HumanoidRootPart)
-					forcePart(obj, att1) -- sadece diğer oyunculara yapışır
-				end
-			end
+	for _, obj in pairs(Workspace:GetDescendants()) do
+		if math.random() < 0.6 then
+			chaosPart(obj)
+		end
+	end
+
+	for _, plr in pairs(Players:GetPlayers()) do
+		if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+			local part = Instance.new("Part", Workspace)
+			part.Size = Vector3.new(4,4,4)
+			part.Anchored = false
+			part.CanCollide = false
+			part.Position = plr.Character.HumanoidRootPart.Position + Vector3.new(0, math.random(4,10), 0)
+			part.BrickColor = BrickColor.Random()
+
+			chaosPart(part)
+
+			local weld = Instance.new("WeldConstraint", part)
+			weld.Part0 = part
+			weld.Part1 = plr.Character.HumanoidRootPart
 		end
 	end
 end)
 
 -- Hortum efekti
 tornadoBtn.MouseButton1Click:Connect(function()
-	for _, obj in pairs(workspace:GetDescendants()) do
-		if obj:IsA("BasePart") and not obj.Anchored and not obj:IsDescendantOf(Players) then
-			local bodyGyro = Instance.new("BodyGyro", obj)
-			bodyGyro.D = 1000
-			bodyGyro.P = 3000
-			bodyGyro.MaxTorque = Vector3.new(1e6, 1e6, 1e6)
-
-			local bodyPos = Instance.new("BodyPosition", obj)
-			bodyPos.Position = center.Position + Vector3.new(math.random(-10,10), math.random(5,25), math.random(-10,10))
-			bodyPos.MaxForce = Vector3.new(5e5, 5e5, 5e5)
+	for _, obj in pairs(Workspace:GetDescendants()) do
+		if obj:IsA("Torque") or obj:IsA("AlignPosition") or obj:IsA("Attachment") then
+			obj:Destroy() -- dönmeleri durdur
+		elseif obj:IsA("BasePart") and not obj.Anchored and not obj:IsDescendantOf(Players) then
+			if math.random() < 0.3 then
+				obj.Velocity = Vector3.new(
+					math.random(-80,80),
+					math.random(150,250),
+					math.random(-80,80)
+				)
+			elseif math.random() < 0.1 then
+				obj:Destroy() -- bazı parçalar yok olur
+			end
 		end
 	end
 end)
