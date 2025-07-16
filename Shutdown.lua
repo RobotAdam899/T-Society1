@@ -1,5 +1,5 @@
 local player = game.Players.LocalPlayer
-if player.Name ~= "naberbot98w" then return end
+if player.Name ~= "botkullanici099" then return end
 
 local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
 gui.Name = "TSOCIETY_GUI"
